@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import QMainWindow, QApplication, QMessageBox
 from GUIS.Principal import Ui_MainWindow
 from src.Gestion.AdminCategorias import AdminCategorias
 from src.Gestion.AdminClientes import AdminClientes
+from src.Gestion.AdminPedidos import AdminPedidos
 from src.Gestion.AdminRestaurantes import AdminRestaurantes
 
 
@@ -43,8 +44,8 @@ class Principal(QMainWindow):
 
     def pedido(self):
         print("Se llama a Pedido")
-        self.ventanaCategoria = AdminPedidos()
-        self.ventanaCategoria.show()
+        self.ventanaPedido = AdminPedidos()
+        self.ventanaPedido.show()
 
     def consultas(self):
         print("Se llama a Consultas")
