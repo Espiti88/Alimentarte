@@ -105,7 +105,6 @@ class AdminCategorias(QMainWindow):
             except Exception as miError:
                 QMessageBox.warning(self, "Agregar Categoria", "La categoria ya existe, no se puede repetir")
                 print(miError)
-
         self.verTodas()
 
 
@@ -125,7 +124,6 @@ class AdminCategorias(QMainWindow):
             except Exception as miError:
                 QMessageBox.warning(self, "Eliminar", 'Fallo ejecutando el procedimiento')
                 print(miError)
-
         self.verTodas()
 
     def modifyCategoria(self):
@@ -151,6 +149,7 @@ class AdminCategorias(QMainWindow):
                 except Exception as miError:
                     QMessageBox.warning(self, "Modificar", 'Fallo ejecutando el procedimiento')
                     print(miError)
+        self.verTodas()
 
     def existeIdCategoria(self, idCategoria):
         try:

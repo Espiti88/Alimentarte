@@ -1,182 +1,173 @@
-from src.Modelo.Cliente import Cliente
-from src.Conex.Conexion import Conexion
+from PyQt6.QtWidgets import QMainWindow, QMessageBox, QTableWidgetItem
 
-class AdminClientes:
+from src.Conex.Conexion import Conexion
+from src.GUIS.DClientes import Ui_MainWindow
+class AdminClientes(QMainWindow):
 
     def __init__(self):
+        super(AdminClientes, self).__init__()
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+
         self.con = Conexion()
         self.miConexion = self.con.conectar()
+        print('Objeto tipo AdminCliente creado y listo para usarse..!!')
 
-        print('Objeto tipo AdminClientes creado')
-        self.menu()
+        self.ui.PBTodas.clicked.connect(self.verTodos)
+        self.ui.PBBuscar.clicked.connect(self.buscarCliente)
+        self.ui.PBAgregar.clicked.connect(self.agregaCliente)
+        self.ui.PBModificar.clicked.connect(self.modificarCliente)
+        self.ui.PBEliminar.clicked.connect(self.eliminaCliente)
+        self.ui.PBSalir.clicked.connect(self.cerrarConexion)
 
-    def menu(self):
-        opcion = -1
-        while opcion != 0:
+        self.verTodos()
 
-            print('\n===============')
-            print(' Clientes')
-            print('===============')
-            print("0. Salir")
-            print("1. Nuevo cliente")
-            print("2. Ver todos los clientes")
-            print("3. Buscar cliente")
-            print("4. Eliminar cliente")
-            print("5. Modificar cliente")
-
-            opcion = int(input("Opción: "))
-            print()
-
-            if opcion == 0:
-                self.miConexion = self.con.desconectar()
-                print("Fin del menu de Clientes")
-
-            elif opcion == 1:
-                self.nuevoCliente()
-            elif opcion == 2:
-                self.verTodos()
-            elif opcion == 3:
-                self.buscarCliente()
-            elif opcion == 4:
-                self.eliminarCliente()
-            elif opcion == 5:
-                self.modificarCliente()
-            else:
-                print('Esa opción no existe!')
-
-    def nuevoCliente(self):
-
-        id = int(input("¿Cuál es el ID?: "))
-
-        if self.existeId(id):
-            print("Ya existe un cliente con ese código.")
-            return
-
-        nombre = input("¿Cuál es el nombre?: ")
-        telefono = input("¿Cuál es el teléfono?: ")
-
-        correo = input("¿Cuál es el correo?: ")
-        if self.existeCorreo(correo):
-            print("Ya existe un cliente con ese correo.")
-            return
-
-        try:
-            mycursor = self.miConexion.cursor()
-
-            mycursor.callproc('newCliente', [id, nombre, telefono, correo])
-            self.miConexion.commit()
-
-            print('El cliente ha sido creada!')
-            mycursor.close()
-
-        except Exception as miError:
-            print('Fallo ejecutando el procedimiento')
-            print(miError)
+    def cerrarConexion(self):
+        self.con.desconectar()
+        self.close()
 
     def verTodos(self):
-
-        print("---Lista de Clientes---\n")
-
         cant = 0
         try:
             mycursor = self.miConexion.cursor()
             mycursor.callproc('allClientes')
 
+            total = self.ui.TWTabla.rowCount()
+            for rep in range(total):
+                self.ui.TWTabla.removeRow(0)
+
             for result in mycursor.stored_results():
-
                 for (idCliente, nombre, telefono, correo) in result:
-                    elCliente = Cliente(idCliente, nombre, telefono, correo)
-                    elCliente.toString()
-                    cant = cant + 1
+                    self.ui.TWTabla.insertRow(cant)
+                    celdaId = QTableWidgetItem(str(idCliente))
+                    celdaNombre = QTableWidgetItem(nombre)
+                    celdaTelefono = QTableWidgetItem(telefono)
+                    celdaCorreo = QTableWidgetItem(correo)
 
+                    self.ui.TWTabla.setItem(cant, 0, celdaId)
+                    self.ui.TWTabla.setItem(cant, 1, celdaNombre)
+                    self.ui.TWTabla.setItem(cant, 2, celdaTelefono)
+                    self.ui.TWTabla.setItem(cant, 3, celdaCorreo)
+
+                    cant += 1
             if cant == 0:
-                print("No hay clientes registrados")
+                QMessageBox.information(self, "Ver Todos", "No hay clientes registrados..!!")
 
             mycursor.close()
 
         except Exception as miError:
-            print('Fallo ejecutando el procedimiento!')
+            QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
             print(miError)
 
     def buscarCliente(self):
-
-        id = int(input('Digite el ID a buscar: '))
-        if not self.existeId(id):
-            print("Ese cliente no existe")
+        cant = 0
+        idClienteSearch = self.ui.SBId.value()
+        if not self.existeIdCliente(idClienteSearch):
+            QMessageBox.information(self, "Buscar", "El cliente no existe")
         else:
             try:
                 mycursor = self.miConexion.cursor()
-                mycursor.callproc('getCliente', [id])
+                mycursor.callproc('getCliente', [idClienteSearch])
+
+                total = self.ui.TWTabla.rowCount()
+                for rep in range(total):
+                    self.ui.TWTabla.removeRow(0)
 
                 for result in mycursor.stored_results():
-                    for (idCliente, nombre, telefono, correo) in result:
-                        elCliente = Cliente(idCliente, nombre, telefono, correo)
-                        elCliente.toString()
+                    for (idClienteSearch, nombre, telefono, correo) in result:
+                        self.ui.TWTabla.insertRow(cant)
 
-            except Exception as miError:
-                print('Fallo ejecutando el procedimiento')
-                print(miError)
+                        celdaId = QTableWidgetItem(str(idClienteSearch))
+                        celdaNombre = QTableWidgetItem(nombre)
+                        celdaTelefono = QTableWidgetItem(telefono)
+                        celdaCorreo = QTableWidgetItem(correo)
 
-    def eliminarCliente(self):
+                        self.ui.TWTabla.setItem(cant, 0, celdaId)
+                        self.ui.TWTabla.setItem(cant, 1, celdaNombre)
+                        self.ui.TWTabla.setItem(cant, 2, celdaTelefono)
+                        self.ui.TWTabla.setItem(cant, 3, celdaCorreo)
 
-        id = int(input('Digite el ID a eliminar: '))
-        if not self.existeId(id):
-            print("Ese cliente no existe, no se puede eliminar")
-
-        else:
-            try:
-                mycursor = self.miConexion.cursor()
-                mycursor.callproc('delCliente', [id])
-                self.miConexion.commit()
-
-                print('El cliente ha sido eliminado..!!')
-
-            except Exception as miError:
-                print('Fallo ejecutando el procedimiento')
-                print(miError)
-
-    def modificarCliente(self):
-
-        id = int(input("¿Digite el ID a modificar:  "))
-        print()
-
-        if not self.existeId(id):
-            print("Ese cliente no existe, no se pude modificar")
-        else:
-            try:
-                mycursor = self.miConexion.cursor()
-                mycursor.callproc('getCliente', [id])
-
-                for result in mycursor.stored_results():
-                    for (idCliente, nombre, telefono, correo) in result:
-                        elCliente = Cliente(idCliente, nombre, telefono, correo)
-
-                newId = int(input("¿Cuál es el nuevo Id?: "))
-
-                if self.existeId(newId) and newId != elCliente.getIdCliente():
-                    print("Ese Id ya existe")
-                    mycursor.close()
-                    return
-
-                newNombre = input("¿Cuál es el nuevo nombre?: ")
-                newTelefono = input("¿Cuál es el nuevo teléfono?: ")
-
-                newCorreo = input("¿Cuál es el nuevo correo?: ")
-                if self.existeCorreo(newCorreo) and newCorreo != elCliente.getCorreo():
-                    print("Ese correo ya existe")
-                    mycursor.close()
-                    return
-
-                mycursor.callproc('modCliente', [newId, newNombre, newTelefono, newCorreo, id])
-                self.miConexion.commit()
-                print("\nHas modificado el cliente con éxito.")
                 mycursor.close()
 
             except Exception as miError:
-                print('Fallo ejecutando el procedimiento')
+                QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
                 print(miError)
 
-    def existeId(self, id):
+    def agregaCliente(self):
+
+        idCliente = self.ui.SBId2.value()
+
+        if self.existeIdCliente(idCliente):
+            QMessageBox.information(self, "Agregar", "El cliente ya existe, no se puede repetir")
+        else:
+            nombre = self.ui.LENombre.text()
+            telefono = self.ui.LETelefono.text()
+            correo = self.ui.LECorreo.text()
+            if self.existeCorreo(correo):
+                QMessageBox.information(self, "Agregar", "Ya existe un cliente con ese correo!")
+            else:
+                try:
+                    mycursor = self.miConexion.cursor()
+
+                    mycursor.callproc('newCliente', [idCliente, nombre, telefono, correo])
+                    self.miConexion.commit()
+
+                    QMessageBox.information(self, "Agregar", "El cliente ha sido creado!")
+                    mycursor.close()
+
+                except Exception as miError:
+                    QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
+                    print(miError)
+        self.verTodos()
+
+    def eliminaCliente(self):
+        idClienteDel = self.ui.SBId.value()
+        if not self.existeIdCliente(idClienteDel):
+            QMessageBox.information(self, "Eliminar", "El cliente no existe, no se puede eliminar")
+        else:
+            try:
+                mycursor = self.miConexion.cursor()
+                mycursor.callproc('delCliente', [idClienteDel])
+                self.miConexion.commit()
+
+                QMessageBox.information(self, "Eliminar", 'El cliente ha sido eliminado..!!')
+                mycursor.close()
+            except Exception as miError:
+                QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
+                print(miError)
+        self.verTodos()
+
+    def modificarCliente(self):
+
+        idClienteOld = self.ui.SBId2.value()
+
+        if not self.existeIdCliente(idClienteOld):
+            QMessageBox.information(self, "Modificar", 'Ese cliente no existe, no se pude modificar')
+        else:
+            try:
+                mycursor = self.miConexion.cursor()
+                idClienteNew = self.ui.SBNuevoId.value()
+                if idClienteNew != idClienteOld and self.existeIdCliente(idClienteNew):
+                    QMessageBox.information(self, "Modificar",
+                                            "Ya existe un cliente con ese ID, no se puede modificar")
+                nombreNew = self.ui.LENewNombre.text()
+                telefonoNew = self.ui.LENewTelefono.text()
+                correoNew = self.ui.LENewCorreo.text()
+                if self.existeCorreo(correoNew):
+                    QMessageBox.information(self, "Modificar",
+                                            "Ya existe un cliente con ese correo, no se puede modificar")
+                    mycursor.close()
+                else:
+                    mycursor.callproc('modCliente', [idClienteNew, nombreNew, telefonoNew, correoNew, idClienteOld])
+                    self.miConexion.commit()
+                    QMessageBox.information(self, "Modificar","Has modificado el cliente con éxito")
+                    mycursor.close()
+            except Exception as miError:
+                QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
+                print(miError)
+        self.verTodos()
+
+    def existeIdCliente(self, id):
         try:
             mycursor = self.miConexion.cursor()
             query = "SELECT count(*) FROM clientes WHERE idCliente = %s;"
