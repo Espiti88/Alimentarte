@@ -1,225 +1,161 @@
-from src.Modelo.Pedido import Pedido
-from datetime import datetime
+from PyQt6.QtWidgets import QMainWindow, QMessageBox, QTableWidgetItem
 from src.Conex.Conexion import Conexion
+from src.GUIS.DPedidos import Ui_MainWindow
 
 
-class AdminPedidos:
+class AdminPedidos(QMainWindow):
 
     def __init__(self):
+        super(AdminPedidos, self).__init__()
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+
         self.con = Conexion()
         self.miConexion = self.con.conectar()
+        print('Objeto tipo AdminPedido creado y listo para usarse..!!')
 
-        print('Objeto tipo AdminPedidos creado')
-        self.menu()
+        self.ui.PBTodas.clicked.connect(self.verTodos)
+        self.ui.PBBuscar.clicked.connect(self.buscarPedido)
+        self.ui.PBAgregar.clicked.connect(self.agregaPedido)
+        self.ui.PBModificar.clicked.connect(self.modificarPedido)
+        self.ui.PBEliminar.clicked.connect(self.eliminarPedido)
+        self.ui.PBSalir.clicked.connect(self.cerrarConexion)
 
-    def menu(self):
-        opcion = -1
-        while opcion != 0:
+        self.verTodos()
 
-            print('\n===============')
-            print(' Pedidos')
-            print('===============')
-            print("0. Salir")
-            print("1. Nuevo pedido")
-            print("2. Ver todos los pedidos")
-            print("3. Buscar pedido")
-            print("4. Eliminar pedido")
-            print("5. Modificar pedido")
-
-            opcion = int(input("Opción: "))
-            print()
-
-            if opcion == 0:
-                self.miConexion = self.con.desconectar()
-                print("Fin del menu de Pedido")
-
-            elif opcion == 1:
-                self.nuevoPedido()
-            elif opcion == 2:
-                self.verTodos()
-            elif opcion == 3:
-                self.buscarPedido()
-            elif opcion == 4:
-                self.eliminarPedido()
-            elif opcion == 5:
-                self.modificarPedido()
-            else:
-                print('Esa opción no existe!')
-
-    def nuevoPedido(self):
-
-        idCliente = int(input("¿Cuál es el ID del cliente?: "))
-        if not self.existeIdCliente(idCliente):
-            print("No existe un cliente con ese código.")
-            return
-
-        idPlato = int(input("¿Cuál es el ID del plato?: "))
-        if not self.existeIdPlato(idPlato):
-            print("No existe un plato con ese código.")
-            return
-
-        year = int(input("¿Cuál es el año?: "))
-        month = int(input("¿Cuál es el mes?: "))
-        day = int(input("¿Cuál es el día?: "))
-        hour = int(input("¿Cuál es la hora? (número del 0 - 24): "))
-        minute = int(input("¿Cuál es el minuto?: "))
-        second = int(input("¿Cuál es el segundo?: "))
-
-        fecha_hora = datetime(year, month, day, hour, minute, second)
-        if self.existeCodigo(idCliente, idPlato, fecha_hora):
-            print("Ya existe un pedido con ese código.")
-            return
-
-        try:
-            mycursor = self.miConexion.cursor()
-
-            mycursor.callproc('newPedido', [idCliente, idPlato, fecha_hora])
-            self.miConexion.commit()
-
-            print('El pedido ha sido creado!')
-            mycursor.close()
-
-        except Exception as miError:
-            print('Fallo ejecutando el procedimiento')
-            print(miError)
+    def cerrarConexion(self):
+        self.con.desconectar()
+        self.close()
 
     def verTodos(self):
-
-        print("---Lista de Pedidos---\n")
-
         cant = 0
         try:
             mycursor = self.miConexion.cursor()
             mycursor.callproc('allPedidos')
-
+            total = self.ui.TWTabla.rowCount()
+            for rep in range(total):
+                self.ui.TWTabla.removeRow(0)
             for result in mycursor.stored_results():
-
                 for (idCliente, idPlato, fecha_hora) in result:
-                    elPedido = Pedido(idCliente, idPlato, fecha_hora)
-                    elPedido.toString()
-                    cant = cant + 1
+                    self.ui.TWTabla.insertRow(cant)
+                    celdaIdCliente = QTableWidgetItem(str(idCliente))
+                    celdaIdPlato = QTableWidgetItem(str(idPlato))
+                    celdaFecha = QTableWidgetItem(str(fecha_hora))
 
+                    self.ui.TWTabla.setItem(cant, 0, celdaIdCliente)
+                    self.ui.TWTabla.setItem(cant, 1, celdaIdPlato)
+                    self.ui.TWTabla.setItem(cant, 2, celdaFecha)
+
+                    cant += 1
             if cant == 0:
-                print("No hay pedidos registrados")
-
+                QMessageBox.information(self, "Ver Todos", "No hay pedidos registrados..!!")
             mycursor.close()
-
         except Exception as miError:
-            print('Fallo ejecutando el procedimiento!')
+            QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
             print(miError)
 
     def buscarPedido(self):
-
-        idCliente = int(input("¿Cuál es el ID del cliente a buscar?: "))
-        idPlato = int(input("¿Cuál es el ID del plato a buscar?: "))
-
-        year = int(input("¿Cuál es el año?: "))
-        month = int(input("¿Cuál es el mes?: "))
-        day = int(input("¿Cuál es el día?: "))
-        hour = int(input("¿Cuál es la hora? (número del 0 - 24): "))
-        minute = int(input("¿Cuál es el minuto?: "))
-        second = int(input("¿Cuál es el segundo?: "))
-
-        fecha_hora = datetime(year, month, day, hour, minute, second)
+        cant = 0
+        idCliente = self.ui.SBCliente.value()
+        idPlato = self.ui.SBPlato.value()
+        fecha_hora = self.ui.dateTimeEdit.text()
         if not self.existeCodigo(idCliente, idPlato, fecha_hora):
-            print("Ese cliente no existe")
-
+            QMessageBox.information(self, "Buscar", "No existe ese pedido")
         else:
             try:
                 mycursor = self.miConexion.cursor()
                 mycursor.callproc('getPedido', [idCliente, idPlato, fecha_hora])
-
+                total = self.ui.TWTabla.rowCount()
+                for rep in range(total):
+                    self.ui.TWTabla.removeRow(0)
                 for result in mycursor.stored_results():
                     for (idCliente, idPlato, fecha_hora) in result:
-                        elPedido = Pedido(idCliente, idPlato, fecha_hora)
-                        elPedido.toString()
-
+                        self.ui.TWTabla.insertRow(cant)
+                        celdaIdCliente = QTableWidgetItem(str(idCliente))
+                        celdaIdPlato = QTableWidgetItem(str(idPlato))
+                        celdaFecha = QTableWidgetItem(str(fecha_hora))
+                        self.ui.TWTabla.setItem(cant, 0, celdaIdCliente)
+                        self.ui.TWTabla.setItem(cant, 1, celdaIdPlato)
+                        self.ui.TWTabla.setItem(cant, 2, celdaFecha)
+                mycursor.close()
             except Exception as miError:
-                print('Fallo ejecutando el procedimiento')
+                QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
                 print(miError)
+
+    def agregaPedido(self):
+        idCliente = self.ui.SBCliente.value()
+        if not self.existeIdCliente(idCliente):
+            QMessageBox.information(self, "Agregar", "No existe un cliente con ese código")
+        else:
+            idPlato = self.ui.SBPlato.value()
+            if not self.existeIdPlato(idPlato):
+                QMessageBox.information(self, "Agregar", "No existe un plato con ese código")
+            else:
+                fecha_hora = self.ui.dateTimeEdit.text()
+                if self.existeCodigo(idCliente, idPlato, fecha_hora):
+                    QMessageBox.information(self, "Agregar", "Ya existe ese pedido")
+                else:
+                    try:
+                        mycursor = self.miConexion.cursor()
+                        mycursor.callproc('newPedido', [idCliente, idPlato, fecha_hora])
+                        self.miConexion.commit()
+                        QMessageBox.information(self, "Agregar", "El pedido ha sido creado")
+                        mycursor.close()
+                        self.verTodos()
+                    except Exception as miError:
+                        QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
+                        print(miError)
 
     def eliminarPedido(self):
 
-        idCliente = int(input("¿Cuál es el ID del cliente a eliminar?: "))
-        idPlato = int(input("¿Cuál es el ID del plato a eliminar?: "))
-
-        year = int(input("¿Cuál es el año?: "))
-        month = int(input("¿Cuál es el mes?: "))
-        day = int(input("¿Cuál es el día?: "))
-        hour = int(input("¿Cuál es la hora? (número del 0 - 24): "))
-        minute = int(input("¿Cuál es el minuto?: "))
-        second = int(input("¿Cuál es el segundo?: "))
-
-        fecha_hora = datetime(year, month, day, hour, minute, second)
+        idCliente = self.ui.SBCliente.value()
+        idPlato = self.ui.SBPlato.value()
+        fecha_hora = self.ui.dateTimeEdit.text()
         if not self.existeCodigo(idCliente, idPlato, fecha_hora):
-            print("Ese cliente no existe, no se puede eliminar")
-
+            QMessageBox.information(self, "Eliminar", "Ese pedido no existe, no se puede eliminar")
         else:
             try:
                 mycursor = self.miConexion.cursor()
                 mycursor.callproc('delPedido', [idCliente, idPlato, fecha_hora])
                 self.miConexion.commit()
-
-                print('El pedido ha sido eliminado..!!')
-
+                mycursor.close()
+                QMessageBox.information(self, "Eliminar", "El pedido ha sido eliminado")
+                self.verTodos()
             except Exception as miError:
-                print('Fallo ejecutando el procedimiento')
+                QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
                 print(miError)
 
     def modificarPedido(self):
 
-        idCliente = int(input("¿Cuál es el ID del cliente a modificar?: "))
-        idPlato = int(input("¿Cuál es el ID del plato a modificar?: "))
-
-        year = int(input("¿Cuál es el año?: "))
-        month = int(input("¿Cuál es el mes?: "))
-        day = int(input("¿Cuál es el día?: "))
-        hour = int(input("¿Cuál es la hora? (número del 0 - 24): "))
-        minute = int(input("¿Cuál es el minuto?: "))
-        second = int(input("¿Cuál es el segundo?: "))
-
-        fecha_hora = datetime(year, month, day, hour, minute, second)
+        idCliente = self.ui.SBCliente.value()
+        idPlato = self.ui.SBPlato.value()
+        fecha_hora = self.ui.dateTimeEdit.text()
         if not self.existeCodigo(idCliente, idPlato, fecha_hora):
-            print("Ese pedido no existe, no se puede modificar")
+            QMessageBox.information(self, "Modificar", "Ese pedido no existe, no se puede modificar")
         else:
             try:
                 mycursor = self.miConexion.cursor()
-                mycursor.callproc('getPedido', [idCliente, idPlato, fecha_hora])
-
-                for result in mycursor.stored_results():
-                    for (idCliente, idPlato, fecha_hora) in result:
-                        elPedido = Pedido(idCliente, idPlato, fecha_hora)
-
-                newIdCliente = int(input("¿Cuál es el nuevo Id del cliente?: "))
+                newIdCliente = self.ui.SBnewCliente.value()
                 if not self.existeIdCliente(newIdCliente):
-                    print("Ese cliente no existe")
+                    QMessageBox.information(self, "Modificar", "Ese cliente no existe")
                     mycursor.close()
-                    return
-
-                newIdPlato = int(input("¿Cuál es el nuevo Id del plato?: "))
-                if not self.existeIdPlato(newIdPlato):
-                    print("Ese plato no existe")
-                    mycursor.close()
-                    return
-
-                newYear = int(input("¿Cuál es el nuevo año?: "))
-                newMonth = int(input("¿Cuál es el nuevo mes?: "))
-                newDay = int(input("¿Cuál es el nuevo día?: "))
-                newHour = int(input("¿Cuál es la nueva hora? (número del 0 - 24): "))
-                newMinute = int(input("¿Cuál es el nuevo minuto?: "))
-                newSecond = int(input("¿Cuál es el segundo?: "))
-
-                newFecha_hora = datetime(newYear, newMonth, newDay, newHour, newMinute, newSecond)
-                if self.existeCodigo(newIdCliente, newIdPlato, newFecha_hora) and (newIdCliente != elPedido.idCliente or newIdPlato != elPedido.idPlato or newFecha_hora != fecha_hora):
-                    print("Ese código ya existe")
-                    mycursor.close()
-                    return
-
-                mycursor.callproc('modPedido', [newIdCliente, newIdPlato, newFecha_hora, idCliente, idPlato, fecha_hora])
-                self.miConexion.commit()
-                print("\nHas modificado el pedido con éxito.")
+                else:
+                    newIdPlato = self.ui.SBnewPlato.value()
+                    if not self.existeIdPlato(newIdPlato):
+                        QMessageBox.information(self, "Modificar", "Ese plato no existe")
+                        mycursor.close()
+                    else:
+                        newFecha_hora = self.ui.newDateTimeEdit.text()
+                        if self.existeCodigo(newIdCliente, newIdPlato, newFecha_hora) and (
+                                newIdCliente != idCliente or newIdPlato != idPlato or newFecha_hora != fecha_hora):
+                            QMessageBox.information(self, "Modificar", "Ese pedido ya existe")
+                        else:
+                            mycursor.callproc('modPedido',
+                                              [newIdCliente, newIdPlato, newFecha_hora, idCliente, idPlato, fecha_hora])
+                            self.miConexion.commit()
+                            QMessageBox.information(self, "Modificar", "El pedido ha sido modificado")
+                            self.verTodos()
                 mycursor.close()
-
             except Exception as miError:
                 print('Fallo ejecutando el procedimiento')
                 print(miError)

@@ -52,9 +52,7 @@ class AdminClientes(QMainWindow):
                     cant += 1
             if cant == 0:
                 QMessageBox.information(self, "Ver Todos", "No hay clientes registrados..!!")
-
             mycursor.close()
-
         except Exception as miError:
             QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
             print(miError)
@@ -86,17 +84,13 @@ class AdminClientes(QMainWindow):
                         self.ui.TWTabla.setItem(cant, 1, celdaNombre)
                         self.ui.TWTabla.setItem(cant, 2, celdaTelefono)
                         self.ui.TWTabla.setItem(cant, 3, celdaCorreo)
-
                 mycursor.close()
-
             except Exception as miError:
                 QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
                 print(miError)
 
     def agregaCliente(self):
-
         idCliente = self.ui.SBId2.value()
-
         if self.existeIdCliente(idCliente):
             QMessageBox.information(self, "Agregar", "El cliente ya existe, no se puede repetir")
         else:
@@ -114,7 +108,6 @@ class AdminClientes(QMainWindow):
 
                     QMessageBox.information(self, "Agregar", "El cliente ha sido creado!")
                     mycursor.close()
-
                 except Exception as miError:
                     QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
                     print(miError)
@@ -138,9 +131,7 @@ class AdminClientes(QMainWindow):
         self.verTodos()
 
     def modificarCliente(self):
-
         idClienteOld = self.ui.SBId2.value()
-
         if not self.existeIdCliente(idClienteOld):
             QMessageBox.information(self, "Modificar", 'Ese cliente no existe, no se pude modificar')
         else:
@@ -156,12 +147,11 @@ class AdminClientes(QMainWindow):
                 if self.existeCorreo(correoNew):
                     QMessageBox.information(self, "Modificar",
                                             "Ya existe un cliente con ese correo, no se puede modificar")
-                    mycursor.close()
                 else:
                     mycursor.callproc('modCliente', [idClienteNew, nombreNew, telefonoNew, correoNew, idClienteOld])
                     self.miConexion.commit()
                     QMessageBox.information(self, "Modificar","Has modificado el cliente con éxito")
-                    mycursor.close()
+                mycursor.close()
             except Exception as miError:
                 QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
                 print(miError)

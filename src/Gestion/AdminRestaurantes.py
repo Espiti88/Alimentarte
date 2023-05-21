@@ -1,5 +1,4 @@
-import sys
-from PyQt6.QtWidgets import QMainWindow, QApplication, QMessageBox, QTableWidgetItem
+from PyQt6.QtWidgets import QMainWindow, QMessageBox, QTableWidgetItem
 
 from src.Conex.Conexion import Conexion
 from src.GUIS.DRestaurantes import Ui_MainWindow
@@ -56,7 +55,6 @@ class AdminRestaurantes(QMainWindow):
                     cant = cant + 1
             if cant == 0:
                 QMessageBox.information(self, "Ver Todos", "No hay restaurantes registradas..!!")
-
             mycursor.close()
         except Exception as miError:
             QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
@@ -92,9 +90,7 @@ class AdminRestaurantes(QMainWindow):
                         self.ui.TWTabla.setItem(cant, 2, celdaCategoria)
                         self.ui.TWTabla.setItem(cant, 3, celdaSlogan)
                         self.ui.TWTabla.setItem(cant, 4, celdaDireccion)
-
                 mycursor.close()
-
             except Exception as miError:
                 QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
                 print(miError)
@@ -136,6 +132,7 @@ class AdminRestaurantes(QMainWindow):
                 self.miConexion.commit()
 
                 QMessageBox.information(self, "Eliminar", "El restaurante ha sido eliminado")
+                mycursor.close()
 
             except Exception as miError:
                 QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
