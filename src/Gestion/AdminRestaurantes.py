@@ -1,184 +1,178 @@
-from src.Modelo.Restaurante import Restaurante
-from src.Conex.Conexion import Conexion
+import sys
+from PyQt6.QtWidgets import QMainWindow, QApplication, QMessageBox, QTableWidgetItem
 
-class AdminRestaurantes:
+from src.Conex.Conexion import Conexion
+from src.GUIS.DRestaurantes import Ui_MainWindow
+class AdminRestaurantes(QMainWindow):
 
     def __init__(self):
+        super(AdminRestaurantes, self).__init__()
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+
         self.con = Conexion()
         self.miConexion = self.con.conectar()
+        print('Objeto tipo AdminRestaurante creado y listo para usarse..!!')
 
-        print('Objeto tipo AdminRestaurantes creado')
-        self.menu()
+        self.ui.PBTodas.clicked.connect(self.verTodos)
+        self.ui.PBBuscar.clicked.connect(self.buscarRestaurante)
+        self.ui.PBAgregar.clicked.connect(self.agregaRestaurante)
+        self.ui.PBModificar.clicked.connect(self.modificarRestaurante)
+        self.ui.PBEliminar.clicked.connect(self.eliminarRestaurante)
+        self.ui.PBSalir.clicked.connect(self.cerrarConexion)
 
-    def menu(self):
-        opcion = -1
-        while opcion != 0:
+        self.verTodos()
 
-            print('\n===============')
-            print(' Restaurantes')
-            print('===============')
-            print("0. Salir")
-            print("1. Nuevo restaurante")
-            print("2. Ver todos los restaurantes")
-            print("3. Buscar restaurante")
-            print("4. Eliminar restaurante")
-            print("5. Modificar restaurante")
-
-            opcion = int(input("Opción: "))
-            print()
-
-            if opcion == 0:
-                self.miConexion = self.con.desconectar()
-                print("Fin del menu de Restaurantes")
-
-            elif opcion == 1:
-                self.nuevoRestaurante()
-            elif opcion == 2:
-                self.verTodos()
-            elif opcion == 3:
-                self.buscarRestaurante()
-            elif opcion == 4:
-                self.eliminarRestaurante()
-            elif opcion == 5:
-                self.modificarRestaurantePlato()
-            else:
-                print('Esa opción no existe!')
-
-    def nuevoRestaurante(self):
-
-        id = int(input("¿Cuál es el ID?: "))
-
-        if self.existeId(id):
-            print("Ya existe un restaurante con ese código.")
-            return
-
-        nombre = input("¿Cuál es el nombre?")
-        categoria = int(input("¿Cuál es la categoria?"))
-        if not self.existeCategoria(categoria):
-            print("No existe una categoria con ese código.")
-            return
-
-        slogan = input("¿Cuál es el slogan?")
-        direccion = input("¿Cuál es la dirección?")
-
-        try:
-            mycursor = self.miConexion.cursor()
-
-            mycursor.callproc('newRestaurante', [id, nombre, categoria, slogan, direccion])
-            self.miConexion.commit()
-
-            print('El restaurante ha sido creado!')
-            mycursor.close()
-
-        except Exception as miError:
-            print('Fallo ejecutando el procedimiento')
-            print(miError)
+    def cerrarConexion(self):
+        self.con.desconectar()
+        self.close()
 
     def verTodos(self):
-
-        print("---Lista de Restaurantes---\n")
-
         cant = 0
         try:
             mycursor = self.miConexion.cursor()
             mycursor.callproc('allRestaurantes')
 
+            total = self.ui.TWTabla.rowCount()
+            for rep in range(total):
+                self.ui.TWTabla.removeRow(0)
+
             for result in mycursor.stored_results():
-
                 for (idRestaurante, nombre, categoria, slogan, direccion) in result:
-                    elRestaurante = Restaurante(idRestaurante, nombre, categoria, slogan, direccion)
-                    elRestaurante.toString()
-                    cant = cant + 1
+                    self.ui.TWTabla.insertRow(cant)
 
+                    celdaId = QTableWidgetItem(str(idRestaurante))
+                    celdaNombre = QTableWidgetItem(nombre)
+                    celdaCategoria = QTableWidgetItem(str(categoria))
+                    celdaSlogan = QTableWidgetItem(slogan)
+                    celdaDireccion = QTableWidgetItem(direccion)
+
+                    self.ui.TWTabla.setItem(cant, 0, celdaId)
+                    self.ui.TWTabla.setItem(cant, 1, celdaNombre)
+                    self.ui.TWTabla.setItem(cant, 2, celdaCategoria)
+                    self.ui.TWTabla.setItem(cant, 3, celdaSlogan)
+                    self.ui.TWTabla.setItem(cant, 4, celdaDireccion)
+
+                    cant = cant + 1
             if cant == 0:
-                print("No hay restaurantes registrados")
+                QMessageBox.information(self, "Ver Todos", "No hay restaurantes registradas..!!")
 
             mycursor.close()
-
         except Exception as miError:
-            print('Fallo ejecutando el procedimiento!')
+            QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
             print(miError)
 
     def buscarRestaurante(self):
+        cant = 0
 
-        id = int(input('Digite el ID a buscar: '))
-        if not self.existeId(id):
-            print("Ese restaurante no existe")
+        idRestauranteSearch = self.ui.SBId.value()
+        if not self.existeIdRestaurante(idRestauranteSearch):
+            QMessageBox.information(self, "Buscar", "El restaurante no existe")
         else:
             try:
                 mycursor = self.miConexion.cursor()
-                mycursor.callproc('getRestaurante', [id])
+                mycursor.callproc('getRestaurante', [idRestauranteSearch])
+
+                total = self.ui.TWTabla.rowCount()
+                for rep in range(total):
+                    self.ui.TWTabla.removeRow(0)
 
                 for result in mycursor.stored_results():
                     for (idRestaurante, nombre, categoria, slogan, direccion) in result:
-                        elRestaurante = Restaurante(idRestaurante, nombre, categoria, slogan, direccion)
-                        elRestaurante.toString()
+                        self.ui.TWTabla.insertRow(cant)
 
-            except Exception as miError:
-                print('Fallo ejecutando el procedimiento')
-                print(miError)
+                        celdaId = QTableWidgetItem(str(idRestaurante))
+                        celdaNombre = QTableWidgetItem(nombre)
+                        celdaCategoria = QTableWidgetItem(str(categoria))
+                        celdaSlogan = QTableWidgetItem(slogan)
+                        celdaDireccion = QTableWidgetItem(direccion)
 
-    def eliminarRestaurante(self):
+                        self.ui.TWTabla.setItem(cant, 0, celdaId)
+                        self.ui.TWTabla.setItem(cant, 1, celdaNombre)
+                        self.ui.TWTabla.setItem(cant, 2, celdaCategoria)
+                        self.ui.TWTabla.setItem(cant, 3, celdaSlogan)
+                        self.ui.TWTabla.setItem(cant, 4, celdaDireccion)
 
-        id = int(input('Digite el ID a eliminar: '))
-        if not self.existeId(id):
-            print("Ese restaurante no existe, no se puede eliminar")
-
-        else:
-            try:
-                mycursor = self.miConexion.cursor()
-                mycursor.callproc('delRestaurante', [id])
-                self.miConexion.commit()
-
-                print('El restaurante ha sido eliminado..!!')
-
-            except Exception as miError:
-                print('Fallo ejecutando el procedimiento')
-                print(miError)
-
-    def modificarRestaurante(self):
-
-        id = int(input("¿Digite el ID a modificar:  "))
-        print()
-
-        if not self.existeId(id):
-            print("Ese restaurante no existe, no se pude modificar")
-        else:
-            try:
-                mycursor = self.miConexion.cursor()
-                mycursor.callproc('getRestaurante', [id])
-
-                for result in mycursor.stored_results():
-                    for (idRestaurante, nombre, categoria, slogan, direccion) in result:
-                        elRestaurante = Restaurante(idRestaurante, nombre, categoria, slogan, direccion)
-
-                newId = int(input("¿Cuál es el nuevo Id?: "))
-
-                if self.existeId(newId) and newId != elRestaurante.getIdCliente():
-                    print("Ese Id ya existe")
-                    mycursor.close()
-                    return
-
-                newNombre = input("¿Cuál es el nuevo nombre?: ")
-
-                newCategoria = int(input("¿Cuál es la nueva categoria?: "))
-                if not self.existeCategoria(newCategoria):
-                    print("No existe una categoria con ese código.")
-                    return
-
-                newSlogan = input("¿Cuál es el nuevo slogan?: ")
-                newDireccion = input("¿Cuál es la nueva dirección?: ")
-
-                mycursor.callproc('modPlato', [newId, newNombre, newCategoria, newSlogan, newDireccion, id])
-                self.miConexion.commit()
-                print("\nHas modificado el restaurante con éxito.")
                 mycursor.close()
 
             except Exception as miError:
-                print('Fallo ejecutando el procedimiento')
+                QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
                 print(miError)
 
-    def existeId(self, id):
+    def agregaRestaurante(self):
+        idRestauranteNew = self.ui.SBId2.value()
+        if self.existeIdRestaurante(idRestauranteNew):
+            QMessageBox.information(self, "Agregar Restaurante", "El restaurante ya existe, no se puede repetir")
+        else:
+            nombre = self.ui.LENombre.text()
+            categoria = self.ui.SBCategoria.value()
+            if not self.existeCategoria(categoria):
+                QMessageBox.information(self, "Agregar Restaurante", "No existe una categoria con ese código.")
+            else:
+                slogan = self.ui.LESlogan.text()
+                direccion = self.ui.LEDireccion.text()
+                try:
+                    mycursor = self.miConexion.cursor()
+                    mycursor.callproc('newRestaurante', [idRestauranteNew, nombre, categoria, slogan, direccion])
+                    self.miConexion.commit()
+
+                    QMessageBox.information(self, "Agregar", "El restaurante ha sido creado")
+                    mycursor.close()
+
+                except Exception as miError:
+                    QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
+                    print(miError)
+        self.verTodos()
+
+    def eliminarRestaurante(self):
+
+        idRestauranteDel = self.ui.SBId.value()
+        if not self.existeIdRestaurante(idRestauranteDel):
+            QMessageBox.information(self, "Eliminar", "El restaurante no existe, no se puede eliminar")
+        else:
+            try:
+                mycursor = self.miConexion.cursor()
+                mycursor.callproc('delRestaurante', [idRestauranteDel])
+                self.miConexion.commit()
+
+                QMessageBox.information(self, "Eliminar", "El restaurante ha sido eliminado")
+
+            except Exception as miError:
+                QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
+                print(miError)
+        self.verTodos()
+
+    def modificarRestaurante(self):
+
+        idRestauranteOld = self.ui.SBId2.value()
+
+        if not self.existeIdRestaurante(idRestauranteOld):
+            QMessageBox.information(self, "Modificar", "Ese restaurante no existe, no se pude modificar")
+        else:
+            idRestauranteNew = self.ui.SBNuevoId.value()
+            if idRestauranteNew != idRestauranteOld and self.existeIdRestaurante(idRestauranteNew):
+                QMessageBox.information(self, "Modificar",
+                                        "Ya existe un restaurante con ese ID, No se puede modificar")
+            else:
+                categoriaNew = self.ui.SBNewCategoria.value()
+                try:
+                    mycursor = self.miConexion.cursor()
+                    if not self.existeCategoria(categoriaNew):
+                        QMessageBox.information(self, "Modificar", "No existe esa categoría")
+                    else:
+                        nombreNew = self.ui.LENewNombre.text()
+                        sloganNew = self.ui.LENewSlogan.text()
+                        direccionNew = self.ui.LENewDireccion.text()
+                        mycursor.callproc('modRestaurantes', [idRestauranteNew, nombreNew, categoriaNew, sloganNew, direccionNew, idRestauranteOld])
+                        self.miConexion.commit()
+                        QMessageBox.information(self, "Modificar", "El restaurante ha sido modificado")
+                        mycursor.close()
+                except Exception as miError:
+                    QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
+                    print(miError)
+        self.verTodos()
+
+    def existeIdRestaurante(self, id):
         try:
             mycursor = self.miConexion.cursor()
             query = "SELECT count(*) FROM restaurantes WHERE idRestaurante = %s;"
@@ -193,7 +187,6 @@ class AdminRestaurantes:
         except Exception as miError:
             print('Fallo ejecutando el programa!')
             print(miError)
-
 
     def existeCategoria(self, categoria):
         try:
