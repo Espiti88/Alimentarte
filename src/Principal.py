@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QMainWindow, QApplication, QMessageBox
 
 from GUIS.Principal import Ui_MainWindow
 from src.Gestion.AdminCategorias import AdminCategorias
+from src.Gestion.AdminClientes import AdminClientes
 
 
 class Principal(QMainWindow):
@@ -31,8 +32,8 @@ class Principal(QMainWindow):
 
     def cliente(self):
         print("Se llama a Cliente")
-        self.ventanaCategoria = AdminClientes()
-        self.ventanaCategoria.show()
+        self.ventanaCliente = AdminClientes()
+        self.ventanaCliente.show()
 
     def restaurante(self):
         print("Se llama a Restaurante")
