@@ -7,6 +7,7 @@ from src.Gestion.AdminClientes import AdminClientes
 from src.Gestion.AdminPedidos import AdminPedidos
 from src.Gestion.AdminPlatos import AdminPlatos
 from src.Gestion.AdminRestaurantes import AdminRestaurantes
+from src.Gestion.Consultas import Consultas
 
 
 class Principal(QMainWindow):
@@ -50,8 +51,8 @@ class Principal(QMainWindow):
 
     def consultas(self):
         print("Se llama a Consultas")
-        self.ventanaCategoria = AdminConsultas()
-        self.ventanaCategoria.show()
+        self.ventanaConsultas = Consultas()
+        self.ventanaConsultas.show()
 
     def terminar(self):
         QMessageBox.information(self, "Adiós", "Gracias por usar nuestros servicios")

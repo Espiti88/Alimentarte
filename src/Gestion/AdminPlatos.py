@@ -45,7 +45,6 @@ class AdminPlatos(QMainWindow):
                     celdaPicante = QTableWidgetItem(picante)
                     celdaRestaurante = QTableWidgetItem(str(restaurante))
                     celdaDescripcion = QTableWidgetItem(descripcion)
-
                     self.ui.TWTabla.setItem(cant, 0, celdaId)
                     self.ui.TWTabla.setItem(cant, 1, celdaNombre)
                     self.ui.TWTabla.setItem(cant, 2, celdaPrecio)

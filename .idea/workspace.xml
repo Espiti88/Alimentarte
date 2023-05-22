@@ -5,17 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ba784b9d-e191-40f0-a5d4-07e462f2e50f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/Conex/Conexion.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Conex/Conexion.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GUIS/DCategorias.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/GUIS/DCategorias.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GUIS/DCategorias.ui" beforeDir="false" afterPath="$PROJECT_DIR$/src/GUIS/DCategorias.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GUIS/DClientes.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/GUIS/DClientes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GUIS/DClientes.ui" beforeDir="false" afterPath="$PROJECT_DIR$/src/GUIS/DClientes.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GUIS/DPedidos.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/GUIS/DPedidos.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GUIS/DPedidos.ui" beforeDir="false" afterPath="$PROJECT_DIR$/src/GUIS/DPedidos.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GUIS/DPlatos.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/GUIS/DPlatos.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GUIS/DPlatos.ui" beforeDir="false" afterPath="$PROJECT_DIR$/src/GUIS/DPlatos.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GUIS/DRestaurantes.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/GUIS/DRestaurantes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GUIS/DRestaurantes.ui" beforeDir="false" afterPath="$PROJECT_DIR$/src/GUIS/DRestaurantes.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Gestion/AdminPlatos.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Gestion/AdminPlatos.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Gestion/Consultas.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Gestion/Consultas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Principal.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Principal.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,14 +33,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/ASUS/Documents/Tareas/Progra Avanzada/Calculadora/Calculadora.py&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "C:/Users/ASUS/Documents/Tareas/Progra Avanzada/AdminEstudiantes",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\ASUS\Documents\Tareas\Progra Avanzada\Parcial2\AdministracionAlimentArte\src\Conex" />
