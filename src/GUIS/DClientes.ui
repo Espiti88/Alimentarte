@@ -453,7 +453,7 @@
         <set>Qt::AlignCenter</set>
        </property>
        <property name="maximum">
-        <number>999999</number>
+        <number>999999999</number>
        </property>
       </widget>
      </item>
@@ -691,7 +691,7 @@
      <set>Qt::AlignCenter</set>
     </property>
     <property name="maximum">
-     <number>999999</number>
+     <number>999999999</number>
     </property>
    </widget>
    <widget class="QLabel" name="LNombreAgregar">
@@ -775,7 +775,7 @@
      <set>Qt::AlignCenter</set>
     </property>
     <property name="maximum">
-     <number>999999</number>
+     <number>999999999</number>
     </property>
    </widget>
    <widget class="QLineEdit" name="LETelefono">
@@ -980,7 +980,7 @@
      <x>0</x>
      <y>0</y>
      <width>1097</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

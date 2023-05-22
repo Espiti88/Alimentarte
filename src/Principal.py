@@ -5,6 +5,7 @@ from GUIS.Principal import Ui_MainWindow
 from src.Gestion.AdminCategorias import AdminCategorias
 from src.Gestion.AdminClientes import AdminClientes
 from src.Gestion.AdminPedidos import AdminPedidos
+from src.Gestion.AdminPlatos import AdminPlatos
 from src.Gestion.AdminRestaurantes import AdminRestaurantes
 
 
@@ -29,8 +30,8 @@ class Principal(QMainWindow):
 
     def plato(self):
         print("Se llama a Plato")
-        self.ventanaCategoria = AdminPlatos()
-        self.ventanaCategoria.show()
+        self.ventanaPlato = AdminPlatos()
+        self.ventanaPlato.show()
 
     def cliente(self):
         print("Se llama a Cliente")
@@ -49,8 +50,8 @@ class Principal(QMainWindow):
 
     def consultas(self):
         print("Se llama a Consultas")
-        self.ventanaCategoria = AdminConsultas()
-        self.ventanaCategoria.show()
+        self.ventanaConsultas = AdminConsultas()
+        self.ventanaConsultas.show()
 
     def terminar(self):
         QMessageBox.information(self, "Adiós", "Gracias por usar nuestros servicios")
