@@ -11,7 +11,7 @@ class Conexion:
             self.conect = mysql.connector.connect(
                 host="localhost",
                 user="root",
-                password="C@rlos2004",
+                password="MySQL",
                 database="parcialalimentarte")
             if self.conect.is_connected():
                 print("Conexion lista para usarse ...!!")

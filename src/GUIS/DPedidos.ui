@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1097</width>
+    <width>1126</width>
     <height>686</height>
    </rect>
   </property>
@@ -432,9 +432,9 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>40</x>
       <y>10</y>
-      <width>971</width>
+      <width>1041</width>
       <height>441</height>
      </rect>
     </property>
@@ -599,9 +599,9 @@
    <widget class="QLabel" name="LIdAgregar">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>10</x>
       <y>490</y>
-      <width>100</width>
+      <width>131</width>
       <height>37</height>
      </rect>
     </property>
@@ -623,7 +623,7 @@
    <widget class="QSpinBox" name="SBCliente">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>230</x>
       <y>490</y>
       <width>150</width>
       <height>34</height>
@@ -638,13 +638,13 @@
      <set>Qt::AlignCenter</set>
     </property>
     <property name="maximum">
-     <number>1000000000</number>
+     <number>999999999</number>
     </property>
    </widget>
    <widget class="QLabel" name="LNombreAgregar">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>380</x>
       <y>490</y>
       <width>121</width>
       <height>37</height>
@@ -668,9 +668,9 @@
    <widget class="QLabel" name="LNuevoId">
     <property name="geometry">
      <rect>
-      <x>760</x>
+      <x>780</x>
       <y>490</y>
-      <width>121</width>
+      <width>71</width>
       <height>37</height>
      </rect>
     </property>
@@ -692,7 +692,7 @@
    <widget class="QSpinBox" name="SBPlato">
     <property name="geometry">
      <rect>
-      <x>530</x>
+      <x>580</x>
       <y>490</y>
       <width>150</width>
       <height>34</height>
@@ -707,13 +707,13 @@
      <set>Qt::AlignCenter</set>
     </property>
     <property name="maximum">
-     <number>1000000000</number>
+     <number>999999999</number>
     </property>
    </widget>
    <widget class="QDateTimeEdit" name="dateTimeEdit">
     <property name="geometry">
      <rect>
-      <x>880</x>
+      <x>950</x>
       <y>490</y>
       <width>141</width>
       <height>34</height>
@@ -726,9 +726,9 @@
    <widget class="QLabel" name="LIdAgregar_2">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>10</x>
       <y>550</y>
-      <width>175</width>
+      <width>211</width>
       <height>37</height>
      </rect>
     </property>
@@ -765,15 +765,15 @@
      <set>Qt::AlignCenter</set>
     </property>
     <property name="maximum">
-     <number>1000000000</number>
+     <number>999999999</number>
     </property>
    </widget>
    <widget class="QLabel" name="LIdAgregar_3">
     <property name="geometry">
      <rect>
-      <x>390</x>
+      <x>380</x>
       <y>550</y>
-      <width>175</width>
+      <width>201</width>
       <height>37</height>
      </rect>
     </property>
@@ -795,7 +795,7 @@
    <widget class="QSpinBox" name="SBnewPlato">
     <property name="geometry">
      <rect>
-      <x>560</x>
+      <x>580</x>
       <y>550</y>
       <width>170</width>
       <height>34</height>
@@ -810,13 +810,13 @@
      <set>Qt::AlignCenter</set>
     </property>
     <property name="maximum">
-     <number>1000000000</number>
+     <number>999999999</number>
     </property>
    </widget>
    <widget class="QDateTimeEdit" name="newDateTimeEdit">
     <property name="geometry">
      <rect>
-      <x>880</x>
+      <x>950</x>
       <y>550</y>
       <width>141</width>
       <height>34</height>
@@ -829,9 +829,9 @@
    <widget class="QLabel" name="LNuevoId_2">
     <property name="geometry">
      <rect>
-      <x>750</x>
-      <y>550</y>
-      <width>121</width>
+      <x>780</x>
+      <y>540</y>
+      <width>161</width>
       <height>37</height>
      </rect>
     </property>
@@ -856,8 +856,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1097</width>
-     <height>21</height>
+     <width>1126</width>
+     <height>26</height>
     </rect>
    </property>
   </widget>

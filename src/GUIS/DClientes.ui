@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1097</width>
-    <height>710</height>
+    <width>1088</width>
+    <height>720</height>
    </rect>
   </property>
   <property name="palette">
@@ -453,7 +453,7 @@
         <set>Qt::AlignCenter</set>
        </property>
        <property name="maximum">
-        <number>999999</number>
+        <number>999999999</number>
        </property>
       </widget>
      </item>
@@ -691,7 +691,7 @@
      <set>Qt::AlignCenter</set>
     </property>
     <property name="maximum">
-     <number>999999</number>
+     <number>999999999</number>
     </property>
    </widget>
    <widget class="QLabel" name="LNombreAgregar">
@@ -736,7 +736,7 @@
    <widget class="QLabel" name="LNuevoId">
     <property name="geometry">
      <rect>
-      <x>665</x>
+      <x>650</x>
       <y>500</y>
       <width>121</width>
       <height>37</height>
@@ -760,7 +760,7 @@
    <widget class="QSpinBox" name="SBNuevoId">
     <property name="geometry">
      <rect>
-      <x>815</x>
+      <x>850</x>
       <y>500</y>
       <width>161</width>
       <height>34</height>
@@ -775,7 +775,7 @@
      <set>Qt::AlignCenter</set>
     </property>
     <property name="maximum">
-     <number>999999</number>
+     <number>999999999</number>
     </property>
    </widget>
    <widget class="QLineEdit" name="LETelefono">
@@ -861,7 +861,7 @@
      <rect>
       <x>650</x>
       <y>540</y>
-      <width>150</width>
+      <width>191</width>
       <height>37</height>
      </rect>
     </property>
@@ -883,7 +883,7 @@
    <widget class="QLineEdit" name="LENewNombre">
     <property name="geometry">
      <rect>
-      <x>815</x>
+      <x>855</x>
       <y>540</y>
       <width>175</width>
       <height>31</height>
@@ -898,9 +898,9 @@
    <widget class="QLabel" name="LNuevoId_3">
     <property name="geometry">
      <rect>
-      <x>650</x>
+      <x>649</x>
       <y>580</y>
-      <width>150</width>
+      <width>191</width>
       <height>37</height>
      </rect>
     </property>
@@ -922,7 +922,7 @@
    <widget class="QLineEdit" name="LENewTelefono">
     <property name="geometry">
      <rect>
-      <x>815</x>
+      <x>855</x>
       <y>580</y>
       <width>175</width>
       <height>31</height>
@@ -937,7 +937,7 @@
    <widget class="QLineEdit" name="LENewCorreo">
     <property name="geometry">
      <rect>
-      <x>815</x>
+      <x>855</x>
       <y>620</y>
       <width>175</width>
       <height>31</height>
@@ -952,9 +952,9 @@
    <widget class="QLabel" name="LNuevoId_4">
     <property name="geometry">
      <rect>
-      <x>650</x>
+      <x>640</x>
       <y>620</y>
-      <width>150</width>
+      <width>181</width>
       <height>37</height>
      </rect>
     </property>
@@ -979,8 +979,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1097</width>
-     <height>21</height>
+     <width>1088</width>
+     <height>26</height>
     </rect>
    </property>
   </widget>
