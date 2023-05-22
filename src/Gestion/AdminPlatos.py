@@ -112,7 +112,7 @@ class AdminPlatos(QMainWindow):
                 QMessageBox.information(self, "Agregar", "No existe un restaurante con ese código, "
                                                          "no se puede crear el plato")
             else:
-                descripcion = self.ui.TEDescripcion.text()
+                descripcion = self.ui.TEDescripcion.toPlainText()
                 if self.existeDescripcion(descripcion):
                     QMessageBox.information(self, "Agregar", "Ya existe esa descripción en otro plato, no se puede repetir")
                 else:
@@ -125,6 +125,7 @@ class AdminPlatos(QMainWindow):
                     except Exception as miError:
                         QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
                         print(miError)
+        self.verTodos()
 
     def eliminarPlato(self):
         idPlato = self.ui.SBIdPlatoBusq.value()
@@ -140,6 +141,7 @@ class AdminPlatos(QMainWindow):
             except Exception as miError:
                 QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
                 print(miError)
+        self.verTodos()
 
     def modificarPlato(self):
         idPlatoOld = self.ui.SBIdPlato.value()
@@ -163,7 +165,7 @@ class AdminPlatos(QMainWindow):
                         print("No existe un restaurante con ese código.")
                         QMessageBox.information(self, "Modificar", "No existe un restaurante con ese código")
                     else:
-                        newDescripcion = self.ui.TEnewDescripcion.text()
+                        newDescripcion = self.ui.TEnewDescripcion.toPlainText()
                         if self.existeDescripcion(newDescripcion):
                             QMessageBox.information(self, "Modificar", "Ya existe esa descripción en otro plato.")
                         else:
@@ -175,6 +177,7 @@ class AdminPlatos(QMainWindow):
             except Exception as miError:
                 QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
                 print(miError)
+        self.verTodos()
 
     def existeIdPlato(self, id):
         try:
