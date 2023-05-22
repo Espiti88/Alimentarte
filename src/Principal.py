@@ -5,6 +5,7 @@ from GUIS.Principal import Ui_MainWindow
 from src.Gestion.AdminCategorias import AdminCategorias
 from src.Gestion.AdminClientes import AdminClientes
 from src.Gestion.AdminPedidos import AdminPedidos
+from src.Gestion.AdminPlatos import AdminPlatos
 from src.Gestion.AdminRestaurantes import AdminRestaurantes
 
 
@@ -29,8 +30,8 @@ class Principal(QMainWindow):
 
     def plato(self):
         print("Se llama a Plato")
-        self.ventanaCategoria = AdminPlatos()
-        self.ventanaCategoria.show()
+        self.ventanaPlato = AdminPlatos()
+        self.ventanaPlato.show()
 
     def cliente(self):
         print("Se llama a Cliente")
