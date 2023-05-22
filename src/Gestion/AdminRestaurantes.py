@@ -54,7 +54,7 @@ class AdminRestaurantes(QMainWindow):
 
                     cant = cant + 1
             if cant == 0:
-                QMessageBox.information(self, "Ver Todos", "No hay restaurantes registradas..!!")
+                QMessageBox.information(self, "Ver Todos", "No hay restaurantes registrados..!!")
             mycursor.close()
         except Exception as miError:
             QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
@@ -103,7 +103,7 @@ class AdminRestaurantes(QMainWindow):
             nombre = self.ui.LENombre.text()
             categoria = self.ui.SBCategoria.value()
             if not self.existeCategoria(categoria):
-                QMessageBox.information(self, "Agregar Restaurante", "No existe una categoria con ese código.")
+                QMessageBox.information(self, "Agregar Restaurante", "No existe una categoria con ese código, no se puede crear el restaurante")
             else:
                 slogan = self.ui.LESlogan.text()
                 direccion = self.ui.LEDireccion.text()
@@ -155,7 +155,7 @@ class AdminRestaurantes(QMainWindow):
                 try:
                     mycursor = self.miConexion.cursor()
                     if not self.existeCategoria(categoriaNew):
-                        QMessageBox.information(self, "Modificar", "No existe esa categoría")
+                        QMessageBox.information(self, "Modificar", "No existe esa categoría, no se puede modificar el restaurante")
                     else:
                         nombreNew = self.ui.LENewNombre.text()
                         sloganNew = self.ui.LENewSlogan.text()

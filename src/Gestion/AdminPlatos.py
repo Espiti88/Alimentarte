@@ -1,195 +1,182 @@
-from src.Modelo.Plato import Plato
-from src.Conex.Conexion import Conexion
+from PyQt6.QtWidgets import QMainWindow, QMessageBox, QTableWidgetItem
 
-class AdminPlatos:
+from src.Conex.Conexion import Conexion
+from src.GUIS.DPlatos import Ui_MainWindow
+
+class AdminPlatos(QMainWindow):
 
     def __init__(self):
+        super(AdminPlatos, self).__init__()
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+
         self.con = Conexion()
         self.miConexion = self.con.conectar()
+        print('Objeto tipo AdminPlato creado y listo para usarse..!!')
 
-        print('Objeto tipo AdminPlatos creado')
-        self.menu()
+        self.ui.PBTodas.clicked.connect(self.verTodos)
+        self.ui.PBBuscar.clicked.connect(self.buscarPlato)
+        self.ui.PBAgregar.clicked.connect(self.agregarPlato)
+        self.ui.PBModificar.clicked.connect(self.modificarPlato)
+        self.ui.PBEliminar.clicked.connect(self.eliminarPlato)
+        self.ui.PBSalir.clicked.connect(self.cerrarConexion)
 
-    def menu(self):
-        opcion = -1
-        while opcion != 0:
+        self.verTodos()
 
-            print('\n===============')
-            print(' Platos')
-            print('===============')
-            print("0. Salir")
-            print("1. Nuevo plato")
-            print("2. Ver todos los platos")
-            print("3. Buscar plato")
-            print("4. Eliminar plato")
-            print("5. Modificar plato")
-
-            opcion = int(input("Opción: "))
-            print()
-
-            if opcion == 0:
-                self.miConexion = self.con.desconectar()
-                print("Fin del menu de Platos")
-
-            elif opcion == 1:
-                self.nuevoPlato()
-            elif opcion == 2:
-                self.verTodos()
-            elif opcion == 3:
-                self.buscarPlato()
-            elif opcion == 4:
-                self.eliminarPlato()
-            elif opcion == 5:
-                self.modificarPlato()
-            else:
-                print('Esa opción no existe!')
-
-    def nuevoPlato(self):
-
-        id = int(input("¿Cuál es el ID?: "))
-
-        if self.existeId(id):
-            print("Ya existe un plato con ese código.")
-            return
-
-        nombre = input("¿Cuál es el nombre?: ")
-        precio = int(input("¿Cuál es el precio?: "))
-        mani = input("¿Tiene mani?: ")
-        picante = input("¿Tiene picante?: ")
-
-        restaurante = int(input("¿Cuál es el restaurante?: "))
-        if not self.existeRestaurante(restaurante):
-            print("No existe un restaurante con ese código.")
-            return
-
-        descripcion = input("¿Cuál es la descripcion?: ")
-        if self.existeDescripcion(descripcion):
-            print("Ya existe esa descripción en otro plato.")
-            return
-
-        try:
-            mycursor = self.miConexion.cursor()
-
-            mycursor.callproc('newPlato', [id, nombre, precio, mani, picante, restaurante, descripcion])
-            self.miConexion.commit()
-
-            print('El plato ha sido creado!')
-            mycursor.close()
-
-        except Exception as miError:
-            print('Fallo ejecutando el procedimiento')
-            print(miError)
+    def cerrarConexion(self):
+        self.con.desconectar()
+        self.close()
 
     def verTodos(self):
-
-        print("---Lista de Platos---\n")
-
         cant = 0
         try:
             mycursor = self.miConexion.cursor()
             mycursor.callproc('allPlatos')
-
+            total = self.ui.TWTabla.rowCount()
+            for rep in range(total):
+                self.ui.TWTabla.removeRow(0)
             for result in mycursor.stored_results():
-
                 for (idPlato, nombre, precio, mani, picante, restaurante, descripcion) in result:
-                    elPlato = Plato(idPlato, nombre, precio, mani, picante, restaurante, descripcion)
-                    elPlato.toString()
-                    cant = cant + 1
+                    self.ui.TWTabla.insertRow(cant)
+                    celdaId = QTableWidgetItem(str(idPlato))
+                    celdaNombre = QTableWidgetItem(nombre)
+                    celdaPrecio = QTableWidgetItem(str(precio))
+                    celdaMani = QTableWidgetItem(mani)
+                    celdaPicante = QTableWidgetItem(picante)
+                    celdaRestaurante = QTableWidgetItem(str(restaurante))
+                    celdaDescripcion = QTableWidgetItem(descripcion)
 
+                    self.ui.TWTabla.setItem(cant, 0, celdaId)
+                    self.ui.TWTabla.setItem(cant, 1, celdaNombre)
+                    self.ui.TWTabla.setItem(cant, 2, celdaPrecio)
+                    self.ui.TWTabla.setItem(cant, 3, celdaMani)
+                    self.ui.TWTabla.setItem(cant, 4, celdaPicante)
+                    self.ui.TWTabla.setItem(cant, 5, celdaRestaurante)
+                    self.ui.TWTabla.setItem(cant, 6, celdaDescripcion)
+
+                    cant += 1
             if cant == 0:
-                print("No hay platos registrados")
-
+                QMessageBox.information(self, "Ver Todos", "No hay platos registrados..!!")
             mycursor.close()
-
         except Exception as miError:
-            print('Fallo ejecutando el procedimiento!')
+            QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
             print(miError)
 
     def buscarPlato(self):
-
-        id = int(input('Digite el ID a buscar: '))
-        if not self.existeId(id):
-            print("Ese plato no existe")
+        cant = 0
+        idPlato = self.ui.SBIdPlatoBusq.value()
+        if not self.existeIdPlato(idPlato):
+            QMessageBox.information(self, "Buscar", "El plato no existe")
         else:
             try:
                 mycursor = self.miConexion.cursor()
-                mycursor.callproc('getPlato', [id])
-
+                mycursor.callproc('getPlato', [idPlato])
+                total = self.ui.TWTabla.rowCount()
+                for rep in range(total):
+                    self.ui.TWTabla.removeRow(0)
                 for result in mycursor.stored_results():
                     for (idPlato, nombre, precio, mani, picante, restaurante, descripcion) in result:
-                        elPlato = Plato(idPlato, nombre, precio, mani, picante, restaurante, descripcion)
-                        elPlato.toString()
+                        self.ui.TWTabla.insertRow(cant)
+                        celdaId = QTableWidgetItem(str(idPlato))
+                        celdaNombre = QTableWidgetItem(nombre)
+                        celdaPrecio = QTableWidgetItem(str(precio))
+                        celdaMani = QTableWidgetItem(mani)
+                        celdaPicante = QTableWidgetItem(picante)
+                        celdaRestaurante = QTableWidgetItem(str(restaurante))
+                        celdaDescripcion = QTableWidgetItem(descripcion)
 
+                        self.ui.TWTabla.setItem(cant, 0, celdaId)
+                        self.ui.TWTabla.setItem(cant, 1, celdaNombre)
+                        self.ui.TWTabla.setItem(cant, 2, celdaPrecio)
+                        self.ui.TWTabla.setItem(cant, 3, celdaMani)
+                        self.ui.TWTabla.setItem(cant, 4, celdaPicante)
+                        self.ui.TWTabla.setItem(cant, 5, celdaRestaurante)
+                        self.ui.TWTabla.setItem(cant, 6, celdaDescripcion)
+                mycursor.close()
             except Exception as miError:
-                print('Fallo ejecutando el procedimiento')
+                QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
                 print(miError)
 
+    def agregarPlato(self):
+        idPlato = self.ui.SBIdPlato.value()
+        if self.existeIdPlato(idPlato):
+            QMessageBox.information(self, "Agregar", "Ya existe un plato con ese código")
+        else:
+            nombre = self.ui.SBIdPlato.value()
+            precio = self.ui.SBPrecio.value()
+            mani = self.ui.CBMani.currentText().lower()
+            picante = self.ui.CBPicante.currentText().lower()
+
+            restaurante = self.ui.SBRestaurante.value()
+            if not self.existeRestaurante(restaurante):
+                QMessageBox.information(self, "Agregar", "No existe un restaurante con ese código, "
+                                                         "no se puede crear el plato")
+            else:
+                descripcion = self.ui.TEDescripcion.text()
+                if self.existeDescripcion(descripcion):
+                    QMessageBox.information(self, "Agregar", "Ya existe esa descripción en otro plato, no se puede repetir")
+                else:
+                    try:
+                        mycursor = self.miConexion.cursor()
+                        mycursor.callproc('newPlato', [idPlato, nombre, precio, mani, picante, restaurante, descripcion])
+                        self.miConexion.commit()
+                        QMessageBox.information(self, "Agregar", "El plato ha sido creado")
+                        mycursor.close()
+                    except Exception as miError:
+                        QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
+                        print(miError)
+
     def eliminarPlato(self):
-
-        id = int(input('Digite el ID a eliminar: '))
-        if not self.existeId(id):
-            print("Ese plato no existe, no se puede eliminar")
-
+        idPlato = self.ui.SBIdPlatoBusq.value()
+        if not self.existeIdPlato(idPlato):
+            QMessageBox.information(self, "Eliminar", "No existe un plato con ese código")
         else:
             try:
                 mycursor = self.miConexion.cursor()
-                mycursor.callproc('delPlato', [id])
+                mycursor.callproc('delPlato', [idPlato])
                 self.miConexion.commit()
-
-                print('El plato ha sido eliminado..!!')
-
+                QMessageBox.information(self, "Eliminar", "El plato ha sido elminado")
+                mycursor.close()
             except Exception as miError:
-                print('Fallo ejecutando el procedimiento')
+                QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
                 print(miError)
 
     def modificarPlato(self):
-
-        id = int(input("¿Digite el ID a modificar:  "))
-        print()
-
-        if not self.existeId(id):
-            print("Ese plato no existe, no se pude modificar")
+        idPlatoOld = self.ui.SBIdPlato.value()
+        if not self.existeIdPlato(idPlatoOld):
+            QMessageBox.information(self, "Modificar", "Ese plato no existe, no se puede modificar")
         else:
             try:
                 mycursor = self.miConexion.cursor()
-                mycursor.callproc('getPlato', [id])
+                newIdPlato = self.ui.SBnewIdPlato.value()
 
-                for result in mycursor.stored_results():
-                    for (idPlato, nombre, precio, mani, picante, restaurante, descripcion) in result:
-                        elPlato = Plato(idPlato, nombre, precio, mani, picante, restaurante, descripcion)
+                if self.existeIdPlato(newIdPlato) and newIdPlato != idPlatoOld:
+                    QMessageBox.information(self, "Modificar", "Ya hay un plato con ese ID, no se puede repetir")
+                else:
+                    newNombre = self.ui.LEnewNombre.text()
+                    newPrecio = self.ui.SBnewPrecio.value()
+                    newMani = self.ui.CBnewMani.currentText().lower()
+                    newPicante = self.ui.CBnewPicante.currentText().lower()
 
-                newId = int(input("¿Cuál es el nuevo Id?: "))
-
-                if self.existeId(newId) and newId != elPlato.getIdCliente():
-                    print("Ese Id ya existe")
-                    mycursor.close()
-                    return
-
-                newNombre = input("¿Cuál es el nuevo nombre?: ")
-                newPrecio = int(input("¿Cuál es el nuevo precio?: "))
-                newMani = input("¿Tiene maní?: ")
-                newPicante = input("¿Tiene picante?: ")
-
-                newRestaurante = int(input("¿Cuál es el restaurante?: "))
-                if not self.existeRestaurante(newRestaurante):
-                    print("No existe un restaurante con ese código.")
-                    return
-
-                newDescripcion = input("¿Cuál es la descripcion?")
-                if self.existeDescripcion(newDescripcion) and newDescripcion != elPlato.getDescripcion():
-                    print("Ya existe esa descripción en otro plato.")
-                    return
-
-                mycursor.callproc('modPlato', [newId, newNombre, newPrecio, newMani, newPicante, newRestaurante, newDescripcion, id])
-                self.miConexion.commit()
-                print("\nHas modificado el plato con éxito.")
+                    newRestaurante = self.ui.SBnewRestaurante.value()
+                    if not self.existeRestaurante(newRestaurante):
+                        print("No existe un restaurante con ese código.")
+                        QMessageBox.information(self, "Modificar", "No existe un restaurante con ese código")
+                    else:
+                        newDescripcion = self.ui.TEnewDescripcion.text()
+                        if self.existeDescripcion(newDescripcion):
+                            QMessageBox.information(self, "Modificar", "Ya existe esa descripción en otro plato.")
+                        else:
+                            mycursor.callproc('modPlato', [newIdPlato, newNombre, newPrecio, newMani, newPicante, newRestaurante, newDescripcion, idPlatoOld])
+                            self.miConexion.commit()
+                            QMessageBox.information(self, "Modificar", "El plato fue modificado")
                 mycursor.close()
 
             except Exception as miError:
-                print('Fallo ejecutando el procedimiento')
+                QMessageBox.warning(self, "Error", 'Fallo ejecutando el procedimiento')
                 print(miError)
 
-    def existeId(self, id):
+    def existeIdPlato(self, id):
         try:
             mycursor = self.miConexion.cursor()
             query = "SELECT count(*) FROM platos WHERE idPlato = %s;"

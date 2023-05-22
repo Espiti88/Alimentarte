@@ -98,7 +98,7 @@ class AdminClientes(QMainWindow):
             telefono = self.ui.LETelefono.text()
             correo = self.ui.LECorreo.text()
             if self.existeCorreo(correo):
-                QMessageBox.information(self, "Agregar", "Ya existe un cliente con ese correo!")
+                QMessageBox.information(self, "Agregar", "Ya existe un cliente con ese correo, no se puede repetir")
             else:
                 try:
                     mycursor = self.miConexion.cursor()

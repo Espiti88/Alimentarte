@@ -85,15 +85,15 @@ class AdminPedidos(QMainWindow):
     def agregaPedido(self):
         idCliente = self.ui.SBCliente.value()
         if not self.existeIdCliente(idCliente):
-            QMessageBox.information(self, "Agregar", "No existe un cliente con ese código")
+            QMessageBox.information(self, "Agregar", "No existe un cliente con ese código, no se puede crear el pedido")
         else:
             idPlato = self.ui.SBPlato.value()
             if not self.existeIdPlato(idPlato):
-                QMessageBox.information(self, "Agregar", "No existe un plato con ese código")
+                QMessageBox.information(self, "Agregar", "No existe un plato con ese código, no se puede crear el pedido")
             else:
                 fecha_hora = self.ui.dateTimeEdit.text()
                 if self.existeCodigo(idCliente, idPlato, fecha_hora):
-                    QMessageBox.information(self, "Agregar", "Ya existe ese pedido")
+                    QMessageBox.information(self, "Agregar", "Ya existe ese pedido, no se puede repetir")
                 else:
                     try:
                         mycursor = self.miConexion.cursor()
@@ -137,18 +137,18 @@ class AdminPedidos(QMainWindow):
                 mycursor = self.miConexion.cursor()
                 newIdCliente = self.ui.SBnewCliente.value()
                 if not self.existeIdCliente(newIdCliente):
-                    QMessageBox.information(self, "Modificar", "Ese cliente no existe")
+                    QMessageBox.information(self, "Modificar", "Ese cliente no existe, no se puede modificar el pedido")
                     mycursor.close()
                 else:
                     newIdPlato = self.ui.SBnewPlato.value()
                     if not self.existeIdPlato(newIdPlato):
-                        QMessageBox.information(self, "Modificar", "Ese plato no existe")
+                        QMessageBox.information(self, "Modificar", "Ese plato no existe, no se puede modificar el pedido")
                         mycursor.close()
                     else:
                         newFecha_hora = self.ui.newDateTimeEdit.text()
                         if self.existeCodigo(newIdCliente, newIdPlato, newFecha_hora) and (
                                 newIdCliente != idCliente or newIdPlato != idPlato or newFecha_hora != fecha_hora):
-                            QMessageBox.information(self, "Modificar", "Ese pedido ya existe")
+                            QMessageBox.information(self, "Modificar", "Ese pedido ya existe, no se puede repetir")
                         else:
                             mycursor.callproc('modPedido',
                                               [newIdCliente, newIdPlato, newFecha_hora, idCliente, idPlato, fecha_hora])
