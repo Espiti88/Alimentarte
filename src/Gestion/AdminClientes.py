@@ -2,6 +2,7 @@ from PyQt6.QtWidgets import QMainWindow, QMessageBox, QTableWidgetItem
 
 from src.Conex.Conexion import Conexion
 from src.GUIS.DClientes import Ui_MainWindow
+
 class AdminClientes(QMainWindow):
 
     def __init__(self):
